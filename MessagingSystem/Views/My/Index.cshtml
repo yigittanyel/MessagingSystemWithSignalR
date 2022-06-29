@@ -1,0 +1,64 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-3.4.1.min.js"></script>
+    <script src="~/Scripts/jquery.signalR-2.4.3.min.js"></script>
+    <script src="~/SignalR/Hubs"></script>
+    <script>
+        $(function () {
+            var chat = $.connection.chatHub;
+            var $username = $('#txtUsername');
+            var $message = $('#txtMessage');
+            var $messages = $('#messages');
+            var $current = new Date();
+            $username.focus();
+            chat.client.sendMessage = function (name, message, current) {
+                $messages.append('<hr><div class="alert alert-success"><li><strong>' + name + '</strong>: ' + message + '</li></div>');
+            };
+            $.connection.hub.start().done(function () {
+                $('#btnSendMessage').click(function () {
+
+                    chat.server.send($username.val(), $message.val());
+
+                    $message.val('').focus();
+                });
+            });
+            if ($messages.length > 5) {
+                this.hide();
+            }
+
+        });
+    </script>
+
+
+</head>
+<body>
+    <br />
+
+        <div class="form-group row">
+            <label style="" for="txtUsername" class="col-sm-2 col-form-label"> <span style="font-weight:bold;color:black; "> Nick Name:</span></label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control-plaintext" id="txtUsername" style="border:2px solid black;">
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label for="txtMessage" class="col-sm-2 col-form-label"> <span style="font-weight:bold;color:black; "> Message:</span></label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control-plaintext" id="txtMessage" style="border:2px solid black;">
+            </div>
+        </div> <hr />
+
+        <button id="btnSendMessage" class="btn btn-success">Mesaj Yolla</button>
+        <div id="messages"></div>
+
+</body>
+</html>
